@@ -17,6 +17,8 @@
 
 #![no_std]
 
+use core::num::FpCategory;
+
 macro_rules! impl_finite_float {
     ($t:ident, $base:ident) => {
         /// Finite floating point number.
@@ -32,11 +34,39 @@ macro_rules! impl_finite_float {
             /// Smallest (negative) value.
             pub const MIN: $t = $t($base::MIN);
 
+            /// Largest value.
+            pub const MAX: $t = $t($base::MAX);
+
             /// Smallest positive value.
             pub const MIN_POSITIVE: $t = $t($base::MIN_POSITIVE);
 
-            /// Largest value.
-            pub const MAX: $t = $t($base::MAX);
+            /// Largest negative value.
+            pub const MAX_NEGATIVE: $t = $t(-$base::MIN_POSITIVE);
+
+            /// Create a new value.
+            ///
+            /// NaN results in None.
+            pub fn new(val: $base) -> Option<$t> {
+                match val.classify() {
+                    FpCategory::Nan => None,
+                    FpCategory::Infinite => {
+                        if val > 0.0 {
+                            Some($t::MAX)
+                        } else {
+                            Some($t::MIN)
+                        }
+                    }
+                    FpCategory::Zero => Some($t(0.0)),
+                    FpCategory::Subnormal => {
+                        if val > 0.0 {
+                            Some($t::MIN_POSITIVE)
+                        } else {
+                            Some($t::MAX_NEGATIVE)
+                        }
+                    }
+                    FpCategory::Normal => Some($t(val)),
+                }
+            }
         }
     };
 }
