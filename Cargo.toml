@@ -1,0 +1,14 @@
+[package]
+name = "finite-float"
+version = "0.0.1"
+authors = ["Tomek Czajka <tczajka@gmail.com>"]
+edition = "2018"
+rust-version = "1.49"
+description = "Finite floating-point arithmetic"
+keywords = ["mathematics"]
+categories = ["mathematics", "no-std"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/tczajka/finite-float-rs"
+homepage = "https://github.com/tczajka/finite-float-rs"
+readme = "README.md"
+
