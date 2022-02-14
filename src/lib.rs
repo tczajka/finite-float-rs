@@ -23,36 +23,17 @@ macro_rules! impl_finite_float {
         pub struct $t($base);
 
         impl $t {
-            /// Radix of the internal representation.
-            pub const RADIX: u32 = $base::RADIX;
-
-            /// Number of significant digits in base 2.
-            pub const MANTISSA_DIGITS: u32 = $base::MANTISSA_DIGITS;
-
-            /// Approximate number of significant digits in base 10.
-            pub const DIGITS: u32 = $base::DIGITS;
-
             /// Difference between 1.0 and the next larger representable number.
             pub const EPSILON: $t = $t($base::EPSILON);
 
-            /// Smallest finite (negative) value.
+            /// Smallest (negative) value.
             pub const MIN: $t = $t($base::MIN);
 
             /// Smallest positive value.
             pub const MIN_POSITIVE: $t = $t($base::MIN_POSITIVE);
 
-            /// Minimum possible power of 2 exponent.
-            /// TODO: Why is $base::MIN_EXP off by 1?
-            pub const MIN_EXP: i32 = $base::MIN_EXP - 1;
-
-            /// Maximum possible power of 2 exponent.
-            pub const MAX_EXP: i32 = $base::MAX_EXP;
-
-            /// Minimum possible power of 10 exponent.
-            pub const MIN_10_EXP: i32 = $base::MIN_10_EXP;
-
-            /// Maximum possible power of 10 exponent.
-            pub const MAX_10_EXP: i32 = $base::MAX_10_EXP;
+            /// Largest value.
+            pub const MAX: $t = $t($base::MAX);
         }
     };
 }
