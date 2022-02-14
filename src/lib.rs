@@ -23,6 +23,9 @@ macro_rules! impl_finite_float {
         pub struct $t($base);
 
         impl $t {
+            /// Number of significant digits in base 2.
+            pub const MANTISSA_DIGITS: u32 = $base::MANTISSA_DIGITS;
+
             /// Difference between 1.0 and the next larger representable number.
             pub const EPSILON: $t = $t($base::EPSILON);
 
