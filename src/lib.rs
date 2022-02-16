@@ -17,55 +17,95 @@
 
 #![no_std]
 
-use core::num::FpCategory;
+use core::{cmp::Ordering, fmt, num::FpCategory};
 
 macro_rules! impl_finite_float {
     ($t:ident, $base:ident) => {
         /// Finite floating point number.
+        #[derive(Clone, Copy, PartialEq)]
         pub struct $t($base);
 
         impl $t {
             /// Number of significant digits in base 2.
             pub const MANTISSA_DIGITS: u32 = $base::MANTISSA_DIGITS;
 
+            /// Zero.
+            pub const ZERO: Self = Self(0.0);
+
             /// Difference between 1.0 and the next larger representable number.
-            pub const EPSILON: $t = $t($base::EPSILON);
+            pub const EPSILON: Self = Self($base::EPSILON);
 
             /// Smallest (negative) value.
-            pub const MIN: $t = $t($base::MIN);
+            pub const MIN: $t = Self($base::MIN);
 
             /// Largest value.
-            pub const MAX: $t = $t($base::MAX);
+            pub const MAX: $t = Self($base::MAX);
 
             /// Smallest positive value.
-            pub const MIN_POSITIVE: $t = $t($base::MIN_POSITIVE);
+            pub const MIN_POSITIVE: Self = Self($base::MIN_POSITIVE);
 
             /// Largest negative value.
-            pub const MAX_NEGATIVE: $t = $t(-$base::MIN_POSITIVE);
+            pub const MAX_NEGATIVE: Self = Self(-$base::MIN_POSITIVE);
 
             /// Create a new value.
             ///
             /// NaN results in None.
-            pub fn new(val: $base) -> Option<$t> {
+            #[inline]
+            pub fn new(val: $base) -> Option<Self> {
+                if val.is_nan() {
+                    None
+                } else {
+                    Some(Self::from_primitive(val, || Ordering::Equal))
+                }
+            }
+
+            /// Returns the value as a primitive IEEE-754 type.
+            #[inline]
+            pub fn get(self) -> $base {
+                self.0
+            }
+
+            /// `val` can't be NaN
+            ///
+            /// `underflow_sign` is called when `val` is 0.0, in which case it indicates
+            /// the comparison of the true value to zero.
+            #[inline]
+            fn from_primitive<US>(val: $base, underflow_sign: US) -> $t
+            where
+                US: FnOnce() -> Ordering,
+            {
                 match val.classify() {
-                    FpCategory::Nan => None,
+                    FpCategory::Nan => unreachable!(),
                     FpCategory::Infinite => {
                         if val > 0.0 {
-                            Some($t::MAX)
+                            Self::MAX
                         } else {
-                            Some($t::MIN)
+                            Self::MIN
                         }
                     }
-                    FpCategory::Zero => Some($t(0.0)),
+                    FpCategory::Zero => match underflow_sign() {
+                        Ordering::Less => Self::MAX_NEGATIVE,
+                        Ordering::Equal => Self(0.0),
+                        Ordering::Greater => Self::MIN_POSITIVE,
+                    },
                     FpCategory::Subnormal => {
                         if val > 0.0 {
-                            Some($t::MIN_POSITIVE)
+                            Self::MIN_POSITIVE
                         } else {
-                            Some($t::MAX_NEGATIVE)
+                            Self::MAX_NEGATIVE
                         }
                     }
-                    FpCategory::Normal => Some($t(val)),
+                    FpCategory::Normal => $t(val),
                 }
+            }
+        }
+
+        impl Eq for $t {}
+
+        impl fmt::Debug for $t {
+            #[inline]
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                self.get().fmt(f)
             }
         }
     };
