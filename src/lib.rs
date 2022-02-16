@@ -19,6 +19,17 @@
 
 use core::{cmp::Ordering, fmt, num::FpCategory};
 
+macro_rules! impl_fmt {
+    ($trait:ident for $t:ident) => {
+        impl fmt::$trait for $t {
+            #[inline]
+            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                fmt::$trait::fmt(&self.get(), f)
+            }
+        }
+    };
+}
+
 macro_rules! impl_finite_float {
     ($t:ident, $base:ident) => {
         /// Finite floating point number.
@@ -102,12 +113,10 @@ macro_rules! impl_finite_float {
 
         impl Eq for $t {}
 
-        impl fmt::Debug for $t {
-            #[inline]
-            fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                self.get().fmt(f)
-            }
-        }
+        impl_fmt!(Debug for $t);
+        impl_fmt!(Display for $t);
+        impl_fmt!(LowerExp for $t);
+        impl_fmt!(UpperExp for $t);
     };
 }
 

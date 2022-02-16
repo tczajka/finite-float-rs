@@ -69,3 +69,18 @@ fn test_new() {
         Float64::MAX_NEGATIVE
     );
 }
+
+#[test]
+#[allow(clippy::approx_constant)]
+fn test_formatting() {
+    assert_eq!(format!("{:?}", Float32::ZERO), "0.0");
+    assert_eq!(format!("{:?}", Float64::ZERO), "0.0");
+    assert_eq!(format!("{:?}", Float32::new(3.14).unwrap()), "3.14");
+    assert_eq!(format!("{:?}", Float64::new(3.14).unwrap()), "3.14");
+    assert_eq!(format!("{}", Float32::new(3.14).unwrap()), "3.14");
+    assert_eq!(format!("{}", Float64::new(3.14).unwrap()), "3.14");
+    assert_eq!(format!("{:e}", Float32::new(3.14).unwrap()), "3.14e0");
+    assert_eq!(format!("{:e}", Float64::new(3.14).unwrap()), "3.14e0");
+    assert_eq!(format!("{:E}", Float32::new(3.14).unwrap()), "3.14E0");
+    assert_eq!(format!("{:E}", Float64::new(3.14).unwrap()), "3.14E0");
+}
