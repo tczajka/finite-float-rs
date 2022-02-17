@@ -84,3 +84,67 @@ fn test_formatting() {
     assert_eq!(format!("{:E}", Float32::new(3.14).unwrap()), "3.14E0");
     assert_eq!(format!("{:E}", Float64::new(3.14).unwrap()), "3.14E0");
 }
+
+#[test]
+#[allow(clippy::approx_constant)]
+fn test_parse() {
+    // Invalid format.
+    assert!("foo".parse::<Float32>().is_err());
+    assert!("foo".parse::<Float64>().is_err());
+
+    // NaN doesn't parse.
+    assert!("NaN".parse::<Float32>().is_err());
+    assert!("NaN".parse::<Float64>().is_err());
+
+    // Normal.
+    assert_eq!("3.14".parse::<Float32>().unwrap().get(), 3.14);
+    assert_eq!("3.14".parse::<Float64>().unwrap().get(), 3.14);
+
+    // Overflow.
+    assert_eq!("1e1000".parse::<Float32>().unwrap(), Float32::MAX);
+    assert_eq!("1e1000".parse::<Float64>().unwrap(), Float64::MAX);
+    assert_eq!("-1e1000".parse::<Float32>().unwrap(), Float32::MIN);
+    assert_eq!("-1e1000".parse::<Float64>().unwrap(), Float64::MIN);
+
+    // Infinity.
+    assert_eq!("inf".parse::<Float32>().unwrap(), Float32::MAX);
+    assert_eq!("inf".parse::<Float64>().unwrap(), Float64::MAX);
+    assert_eq!("-inf".parse::<Float32>().unwrap(), Float32::MIN);
+    assert_eq!("-inf".parse::<Float64>().unwrap(), Float64::MIN);
+
+    // Zero.
+    assert_eq!("0.0".parse::<Float32>().unwrap(), Float32::ZERO);
+    assert_eq!("0.0".parse::<Float64>().unwrap(), Float64::ZERO);
+    assert_eq!("-0.0".parse::<Float32>().unwrap(), Float32::ZERO);
+    assert_eq!("-0.0".parse::<Float64>().unwrap(), Float64::ZERO);
+    assert!("-0.0".parse::<Float32>().unwrap().get().is_sign_positive());
+    assert!("-0.0".parse::<Float64>().unwrap().get().is_sign_positive());
+    assert_eq!("0.0e10000".parse::<Float32>().unwrap(), Float32::ZERO);
+    assert_eq!("0.0e10000".parse::<Float64>().unwrap(), Float64::ZERO);
+    assert_eq!("-0.0e-10000".parse::<Float32>().unwrap(), Float32::ZERO);
+    assert_eq!("-0.0e-10000".parse::<Float64>().unwrap(), Float64::ZERO);
+
+    // Subnormal.
+    assert_eq!("1e-40".parse::<Float32>().unwrap(), Float32::MIN_POSITIVE);
+    assert_eq!("1e-310".parse::<Float64>().unwrap(), Float64::MIN_POSITIVE);
+    assert_eq!("-1e-40".parse::<Float32>().unwrap(), Float32::MAX_NEGATIVE);
+    assert_eq!("-1e-310".parse::<Float64>().unwrap(), Float64::MAX_NEGATIVE);
+
+    // Below subnormal.
+    assert_eq!(
+        "1.00e-10000".parse::<Float32>().unwrap(),
+        Float32::MIN_POSITIVE
+    );
+    assert_eq!(
+        "1.00e-10000".parse::<Float64>().unwrap(),
+        Float64::MIN_POSITIVE
+    );
+    assert_eq!(
+        "-0.0000090e-10000".parse::<Float32>().unwrap(),
+        Float32::MAX_NEGATIVE
+    );
+    assert_eq!(
+        "-0.0000090e-10000".parse::<Float64>().unwrap(),
+        Float64::MAX_NEGATIVE
+    );
+}

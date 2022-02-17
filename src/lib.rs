@@ -17,7 +17,12 @@
 
 #![no_std]
 
-use core::{cmp::Ordering, fmt, num::FpCategory};
+use core::{
+    cmp::Ordering,
+    fmt,
+    num::{FpCategory, ParseFloatError},
+    str::FromStr,
+};
 
 macro_rules! impl_fmt {
     ($trait:ident for $t:ident) => {
@@ -117,8 +122,36 @@ macro_rules! impl_finite_float {
         impl_fmt!(Display for $t);
         impl_fmt!(LowerExp for $t);
         impl_fmt!(UpperExp for $t);
+
+        impl FromStr for $t {
+            type Err = ParseFloatError;
+
+            fn from_str(s: &str) -> Result<Self, ParseFloatError> {
+                let val = $base::from_str(s)?;
+                if val.is_nan() {
+                    Err($base::from_str("NaN value is invalid").unwrap_err())
+                } else {
+                    Ok(Self::from_primitive(val, || parse_sign_of_tiny_float(s)))
+                }
+            }
+        }
     };
 }
 
 impl_finite_float!(Float32, f32);
 impl_finite_float!(Float64, f64);
+
+/// Returns the sign of a floating point number that has rounded to zero.
+fn parse_sign_of_tiny_float(s: &str) -> Ordering {
+    // Only look at the prefix consisting of: [+-] Digit* ( '.' Digit* )?
+    let mut sign = Ordering::Greater;
+    for byte in s.as_bytes() {
+        match byte {
+            b'-' => sign = Ordering::Less,
+            b'+' | b'0' | b'.' => {}
+            b'1'..=b'9' => return sign,
+            _ => break,
+        }
+    }
+    Ordering::Equal
+}
