@@ -2,7 +2,7 @@
 name = "finite-float"
 version = "0.0.1"
 authors = ["Tomek Czajka <tczajka@gmail.com>"]
-edition = "2021"
+edition = "2018"
 rust-version = "1.57"
 description = "Finite floating-point arithmetic"
 keywords = ["mathematics"]
