@@ -25,11 +25,11 @@ use core::{
 };
 
 macro_rules! impl_fmt {
-    ($trait:ident for $t:ident using $base:ident) => {
+    ($trait:ident for $t:ident) => {
         impl fmt::$trait for $t {
             #[inline]
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                fmt::$trait::fmt(&$base::from(*self), f)
+                fmt::$trait::fmt(&self.get(), f)
             }
         }
     };
@@ -75,6 +75,11 @@ macro_rules! impl_finite_float {
                 }
             }
 
+            /// Return the value as a primitive type.
+            pub fn get(self) -> $base {
+                self.0
+            }
+
             /// `val` can't be NaN
             ///
             /// `underflow_sign` is called when `val` is 0.0, in which case it indicates
@@ -114,14 +119,14 @@ macro_rules! impl_finite_float {
 
         impl From<$t> for $base {
             fn from(val: $t) -> Self {
-                val.0
+                val.get()
             }
         }
 
-        impl_fmt!(Debug for $t using $base);
-        impl_fmt!(Display for $t using $base);
-        impl_fmt!(LowerExp for $t using $base);
-        impl_fmt!(UpperExp for $t using $base);
+        impl_fmt!(Debug for $t);
+        impl_fmt!(Display for $t);
+        impl_fmt!(LowerExp for $t);
+        impl_fmt!(UpperExp for $t);
 
         impl FromStr for $t {
             type Err = ParseFloatError;
