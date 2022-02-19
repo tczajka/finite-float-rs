@@ -5,25 +5,25 @@ fn test_constants() {
     assert_eq!(Float32::MANTISSA_DIGITS, 24);
     assert_eq!(Float64::MANTISSA_DIGITS, 53);
 
-    assert_eq!(Float32::ZERO.get(), 0.0);
-    assert!(Float32::ZERO.get().is_sign_positive());
-    assert_eq!(Float64::ZERO.get(), 0.0);
-    assert!(Float64::ZERO.get().is_sign_positive());
+    assert_eq!(f32::from(Float32::ZERO), 0.0);
+    assert!(f32::from(Float32::ZERO).is_sign_positive());
+    assert_eq!(f64::from(Float64::ZERO), 0.0);
+    assert!(f64::from(Float64::ZERO).is_sign_positive());
 
-    assert_eq!(Float32::EPSILON.get(), f32::EPSILON);
-    assert_eq!(Float64::EPSILON.get(), f64::EPSILON);
+    assert_eq!(f32::from(Float32::EPSILON), f32::EPSILON);
+    assert_eq!(f64::from(Float64::EPSILON), f64::EPSILON);
 
-    assert_eq!(Float32::MIN.get(), f32::MIN);
-    assert_eq!(Float64::MIN.get(), f64::MIN);
+    assert_eq!(f32::from(Float32::MIN), f32::MIN);
+    assert_eq!(f64::from(Float64::MIN), f64::MIN);
 
-    assert_eq!(Float32::MAX.get(), f32::MAX);
-    assert_eq!(Float64::MAX.get(), f64::MAX);
+    assert_eq!(f32::from(Float32::MAX), f32::MAX);
+    assert_eq!(f64::from(Float64::MAX), f64::MAX);
 
-    assert_eq!(Float32::MIN_POSITIVE.get(), f32::MIN_POSITIVE);
-    assert_eq!(Float64::MIN_POSITIVE.get(), f64::MIN_POSITIVE);
+    assert_eq!(f32::from(Float32::MIN_POSITIVE), f32::MIN_POSITIVE);
+    assert_eq!(f64::from(Float64::MIN_POSITIVE), f64::MIN_POSITIVE);
 
-    assert_eq!(Float32::MAX_NEGATIVE.get(), -f32::MIN_POSITIVE);
-    assert_eq!(Float64::MAX_NEGATIVE.get(), -f64::MIN_POSITIVE);
+    assert_eq!(f32::from(Float32::MAX_NEGATIVE), -f32::MIN_POSITIVE);
+    assert_eq!(f64::from(Float64::MAX_NEGATIVE), -f64::MIN_POSITIVE);
 }
 
 #[test]
@@ -34,8 +34,8 @@ fn test_new() {
     assert!(Float64::new(f64::NAN).is_none());
 
     // normal
-    assert_eq!(Float32::new(3.14).unwrap().get(), 3.14);
-    assert_eq!(Float64::new(3.14).unwrap().get(), 3.14);
+    assert_eq!(f32::from(Float32::new(3.14).unwrap()), 3.14);
+    assert_eq!(f64::from(Float64::new(3.14).unwrap()), 3.14);
 
     // infinity
     assert_eq!(Float32::new(f32::INFINITY).unwrap(), Float32::MAX);
@@ -46,10 +46,10 @@ fn test_new() {
     // zero
     assert_eq!(Float32::new(0.0).unwrap(), Float32::ZERO);
     assert_eq!(Float32::new(-0.0).unwrap(), Float32::ZERO);
-    assert!(Float32::new(-0.0).unwrap().get().is_sign_positive());
+    assert!(f32::from(Float32::new(-0.0).unwrap()).is_sign_positive());
     assert_eq!(Float64::new(0.0).unwrap(), Float64::ZERO);
     assert_eq!(Float64::new(-0.0).unwrap(), Float64::ZERO);
-    assert!(Float64::new(-0.0).unwrap().get().is_sign_positive());
+    assert!(f64::from(Float64::new(-0.0).unwrap()).is_sign_positive());
 
     // subnormal
     assert_eq!(
@@ -97,8 +97,8 @@ fn test_parse() {
     assert!("NaN".parse::<Float64>().is_err());
 
     // Normal.
-    assert_eq!("3.14".parse::<Float32>().unwrap().get(), 3.14);
-    assert_eq!("3.14".parse::<Float64>().unwrap().get(), 3.14);
+    assert_eq!(f32::from("3.14".parse::<Float32>().unwrap()), 3.14);
+    assert_eq!(f64::from("3.14".parse::<Float64>().unwrap()), 3.14);
 
     // Overflow.
     assert_eq!("1e1000".parse::<Float32>().unwrap(), Float32::MAX);
@@ -117,8 +117,8 @@ fn test_parse() {
     assert_eq!("0.0".parse::<Float64>().unwrap(), Float64::ZERO);
     assert_eq!("-0.0".parse::<Float32>().unwrap(), Float32::ZERO);
     assert_eq!("-0.0".parse::<Float64>().unwrap(), Float64::ZERO);
-    assert!("-0.0".parse::<Float32>().unwrap().get().is_sign_positive());
-    assert!("-0.0".parse::<Float64>().unwrap().get().is_sign_positive());
+    assert!(f32::from("-0.0".parse::<Float32>().unwrap()).is_sign_positive());
+    assert!(f64::from("-0.0".parse::<Float64>().unwrap()).is_sign_positive());
     assert_eq!("0.0e10000".parse::<Float32>().unwrap(), Float32::ZERO);
     assert_eq!("0.0e10000".parse::<Float64>().unwrap(), Float64::ZERO);
     assert_eq!("-0.0e-10000".parse::<Float32>().unwrap(), Float32::ZERO);
