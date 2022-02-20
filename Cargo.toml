@@ -12,3 +12,11 @@ repository = "https://github.com/tczajka/finite-float-rs"
 homepage = "https://github.com/tczajka/finite-float-rs"
 readme = "README.md"
 
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+default = ["std"]
+
+# Interface with the std library.
+std = []
