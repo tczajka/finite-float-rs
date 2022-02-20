@@ -1,4 +1,6 @@
-use finite_float::{Float32, Float64};
+use finite_float::{Float32, Float64, NanError};
+
+use std::convert::TryFrom;
 
 #[test]
 fn test_constants() {
@@ -147,4 +149,24 @@ fn test_parse() {
         "-0.0000090e-10000".parse::<Float64>().unwrap(),
         Float64::MAX_NEGATIVE
     );
+}
+
+#[test]
+#[allow(clippy::approx_constant)]
+fn test_conversions() {
+    assert_eq!(f32::from(Float32::new(3.14).unwrap()), 3.14);
+    assert_eq!(f64::from(Float64::new(3.14).unwrap()), 3.14);
+
+    assert_eq!(
+        Float32::try_from(3.14).unwrap(),
+        Float32::new(3.14).unwrap()
+    );
+
+    assert_eq!(
+        Float64::try_from(3.14).unwrap(),
+        Float64::new(3.14).unwrap()
+    );
+
+    assert_eq!(Float32::try_from(f32::NAN).unwrap_err(), NanError);
+    assert_eq!(Float64::try_from(f64::NAN).unwrap_err(), NanError);
 }

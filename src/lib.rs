@@ -19,6 +19,7 @@
 
 use core::{
     cmp::Ordering,
+    convert::TryFrom,
     fmt,
     num::{FpCategory, ParseFloatError},
     str::FromStr,
@@ -123,6 +124,14 @@ macro_rules! impl_finite_float {
             }
         }
 
+        impl TryFrom<$base> for $t {
+            type Error = NanError;
+
+            fn try_from(val: $base) -> Result<$t, NanError> {
+                $t::new(val).ok_or(NanError)
+            }
+        }
+
         impl_fmt!(Debug for $t);
         impl_fmt!(Display for $t);
         impl_fmt!(LowerExp for $t);
@@ -160,3 +169,17 @@ fn parse_sign_of_tiny_float(s: &str) -> Ordering {
     }
     Ordering::Equal
 }
+
+/// Error indicating an attempt to convert a NaN to a finite float.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct NanError;
+
+impl fmt::Display for NanError {
+    #[inline]
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "conversion from NaN to finite float")
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for NanError {}
