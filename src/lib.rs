@@ -21,6 +21,7 @@ use core::{
     cmp::Ordering,
     convert::TryFrom,
     fmt,
+    hash::{Hash, Hasher},
     num::{FpCategory, ParseFloatError},
     str::FromStr,
 };
@@ -128,6 +129,15 @@ macro_rules! impl_finite_float {
         impl Default for $t {
             fn default() -> Self {
                 Self::ZERO
+            }
+        }
+
+        #[allow(clippy::derive_hash_xor_eq)]
+        impl Hash for $t {
+            fn hash<H>(&self, state: &mut H)
+            where H: Hasher
+            {
+                self.get().to_bits().hash(state)
             }
         }
 

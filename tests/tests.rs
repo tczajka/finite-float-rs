@@ -1,6 +1,6 @@
 use finite_float::{Float32, Float64, NanError};
 
-use std::{cmp::Ordering, convert::TryFrom};
+use std::{cmp::Ordering, collections::HashMap, convert::TryFrom};
 
 #[test]
 fn test_constants() {
@@ -98,6 +98,23 @@ fn test_ord() {
         Float64::new(0.0).unwrap().cmp(&Float64::new(-0.0).unwrap()),
         Ordering::Equal
     );
+}
+
+#[test]
+fn test_hash() {
+    let mut m: HashMap<Float32, u32> = HashMap::new();
+    m.insert(Float32::ZERO, 0);
+    m.insert(Float32::new(3.0).unwrap(), 1);
+    assert_eq!(m.get(&Float32::new(-0.0).unwrap()), Some(&0));
+    assert_eq!(m.get(&Float32::new(3.0).unwrap()), Some(&1));
+    assert_eq!(m.get(&Float32::new(4.0).unwrap()), None);
+
+    let mut m: HashMap<Float64, u32> = HashMap::new();
+    m.insert(Float64::ZERO, 0);
+    m.insert(Float64::new(3.0).unwrap(), 1);
+    assert_eq!(m.get(&Float64::new(-0.0).unwrap()), Some(&0));
+    assert_eq!(m.get(&Float64::new(3.0).unwrap()), Some(&1));
+    assert_eq!(m.get(&Float64::new(4.0).unwrap()), None);
 }
 
 #[test]
