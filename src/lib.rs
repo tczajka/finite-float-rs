@@ -23,6 +23,7 @@ use core::{
     fmt,
     hash::{Hash, Hasher},
     num::{FpCategory, ParseFloatError},
+    ops::Neg,
     str::FromStr,
 };
 
@@ -73,7 +74,7 @@ macro_rules! impl_finite_float {
                 if val.is_nan() {
                     None
                 } else {
-                    Some(Self::from_primitive(val, || Ordering::Equal))
+                    Some(Self::from_primitive(val))
                 }
             }
 
@@ -87,7 +88,7 @@ macro_rules! impl_finite_float {
             /// `underflow_sign` is called when `val` is 0.0, in which case it indicates
             /// the comparison of the true value to zero.
             #[inline]
-            fn from_primitive<US>(val: $base, underflow_sign: US) -> $t
+            fn from_primitive_with_underflow_sign<US>(val: $base, underflow_sign: US) -> Self
             where
                 US: FnOnce() -> Ordering,
             {
@@ -114,6 +115,11 @@ macro_rules! impl_finite_float {
                     }
                     FpCategory::Normal => $t(val),
                 }
+            }
+
+            #[inline]
+            fn from_primitive(val: $base) -> Self {
+                Self::from_primitive_with_underflow_sign(val, || Ordering::Equal)
             }
         }
 
@@ -168,8 +174,24 @@ macro_rules! impl_finite_float {
                 if val.is_nan() {
                     Err($base::from_str("NaN value is invalid").unwrap_err())
                 } else {
-                    Ok(Self::from_primitive(val, || parse_sign_of_tiny_float(s)))
+                    Ok(Self::from_primitive_with_underflow_sign(val, || parse_sign_of_tiny_float(s)))
                 }
+            }
+        }
+
+        impl Neg for $t {
+            type Output = Self;
+
+            fn neg(self) -> Self {
+                Self::from_primitive(-self.get())
+            }
+        }
+
+        impl Neg for &$t {
+            type Output = $t;
+
+            fn neg(self) -> $t {
+                (*self).neg()
             }
         }
     };

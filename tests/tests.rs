@@ -215,3 +215,16 @@ fn test_parse() {
         Float64::MAX_NEGATIVE
     );
 }
+
+#[test]
+fn test_neg() {
+    assert_eq!(-Float32::new(3.0).unwrap(), Float32::new(-3.0).unwrap());
+    assert_eq!(-Float32::ZERO, Float32::ZERO);
+    assert!((-Float32::ZERO).get().is_sign_positive());
+    assert_eq!(-&Float32::new(3.0).unwrap(), Float32::new(-3.0).unwrap());
+
+    assert_eq!(-Float64::new(3.0).unwrap(), Float64::new(-3.0).unwrap());
+    assert_eq!(-Float64::ZERO, Float64::ZERO);
+    assert!((-Float64::ZERO).get().is_sign_positive());
+    assert_eq!(-&Float64::new(3.0).unwrap(), Float64::new(-3.0).unwrap());
+}
