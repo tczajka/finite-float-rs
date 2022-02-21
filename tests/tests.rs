@@ -230,6 +230,7 @@ fn test_neg() {
 }
 
 #[test]
+#[allow(clippy::op_ref)]
 fn test_add() {
     // Normal.
     assert_eq!(
@@ -238,6 +239,31 @@ fn test_add() {
     );
     assert_eq!(
         Float64::new(3.0).unwrap() + Float64::new(4.0).unwrap(),
+        Float64::new(7.0).unwrap()
+    );
+
+    assert_eq!(
+        Float32::new(3.0).unwrap() + &Float32::new(4.0).unwrap(),
+        Float32::new(7.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() + Float32::new(4.0).unwrap(),
+        Float32::new(7.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() + &Float32::new(4.0).unwrap(),
+        Float32::new(7.0).unwrap()
+    );
+    assert_eq!(
+        Float64::new(3.0).unwrap() + &Float64::new(4.0).unwrap(),
+        Float64::new(7.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() + Float64::new(4.0).unwrap(),
+        Float64::new(7.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() + &Float64::new(4.0).unwrap(),
         Float64::new(7.0).unwrap()
     );
 
@@ -288,6 +314,7 @@ fn test_add() {
 }
 
 #[test]
+#[allow(clippy::op_ref)]
 fn test_sub() {
     // Normal.
     assert_eq!(
@@ -296,6 +323,31 @@ fn test_sub() {
     );
     assert_eq!(
         Float64::new(3.0).unwrap() - Float64::new(4.0).unwrap(),
+        Float64::new(-1.0).unwrap()
+    );
+
+    assert_eq!(
+        Float32::new(3.0).unwrap() - &Float32::new(4.0).unwrap(),
+        Float32::new(-1.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() - Float32::new(4.0).unwrap(),
+        Float32::new(-1.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() - &Float32::new(4.0).unwrap(),
+        Float32::new(-1.0).unwrap()
+    );
+    assert_eq!(
+        Float64::new(3.0).unwrap() - &Float64::new(4.0).unwrap(),
+        Float64::new(-1.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() - Float64::new(4.0).unwrap(),
+        Float64::new(-1.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() - &Float64::new(4.0).unwrap(),
         Float64::new(-1.0).unwrap()
     );
 
