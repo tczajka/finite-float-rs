@@ -242,6 +242,7 @@ fn test_add() {
         Float64::new(7.0).unwrap()
     );
 
+    // References.
     assert_eq!(
         Float32::new(3.0).unwrap() + &Float32::new(4.0).unwrap(),
         Float32::new(7.0).unwrap()
@@ -326,6 +327,7 @@ fn test_sub() {
         Float64::new(-1.0).unwrap()
     );
 
+    // References.
     assert_eq!(
         Float32::new(3.0).unwrap() - &Float32::new(4.0).unwrap(),
         Float32::new(-1.0).unwrap()
@@ -394,5 +396,121 @@ fn test_sub() {
     assert_eq!(
         Float64::new(-f64::MIN_POSITIVE * (1.0 + f64::EPSILON)).unwrap() - Float64::MAX_NEGATIVE,
         Float64::MAX_NEGATIVE
+    );
+}
+
+#[test]
+#[allow(clippy::op_ref)]
+fn test_mul() {
+    // Normal.
+    assert_eq!(
+        Float32::new(3.0).unwrap() * Float32::new(4.0).unwrap(),
+        Float32::new(12.0).unwrap()
+    );
+    assert_eq!(
+        Float64::new(3.0).unwrap() * Float64::new(4.0).unwrap(),
+        Float64::new(12.0).unwrap()
+    );
+
+    assert_eq!(
+        Float32::new(3.0).unwrap() * &Float32::new(4.0).unwrap(),
+        Float32::new(12.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() * Float32::new(4.0).unwrap(),
+        Float32::new(12.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() * &Float32::new(4.0).unwrap(),
+        Float32::new(12.0).unwrap()
+    );
+
+    assert_eq!(
+        Float64::new(3.0).unwrap() * &Float64::new(4.0).unwrap(),
+        Float64::new(12.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() * Float64::new(4.0).unwrap(),
+        Float64::new(12.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() * &Float64::new(4.0).unwrap(),
+        Float64::new(12.0).unwrap()
+    );
+
+    // Zero.
+    assert_eq!(Float32::ZERO * Float32::ZERO, Float32::ZERO);
+    assert_eq!(Float64::ZERO * Float64::ZERO, Float64::ZERO);
+
+    assert_eq!(Float32::ZERO * Float32::MAX, Float32::ZERO);
+    assert_eq!(Float32::ZERO * Float32::MIN, Float32::ZERO);
+    assert_eq!(Float32::MAX * Float32::ZERO, Float32::ZERO);
+    assert_eq!(Float32::MIN * Float32::ZERO, Float32::ZERO);
+    assert!((Float32::ZERO * Float32::MIN).get().is_sign_positive());
+
+    assert_eq!(Float64::ZERO * Float64::MAX, Float64::ZERO);
+    assert_eq!(Float64::ZERO * Float64::MIN, Float64::ZERO);
+    assert_eq!(Float64::MAX * Float64::ZERO, Float64::ZERO);
+    assert_eq!(Float64::MIN * Float64::ZERO, Float64::ZERO);
+    assert!((Float64::ZERO * Float64::MIN).get().is_sign_positive());
+
+    // Overflow.
+    assert_eq!(Float32::MAX * Float32::MAX, Float32::MAX);
+    assert_eq!(Float32::MIN * Float32::MAX, Float32::MIN);
+    assert_eq!(Float32::MAX * Float32::MIN, Float32::MIN);
+    assert_eq!(Float32::MIN * Float32::MIN, Float32::MAX);
+
+    // Subnormal.
+    assert_eq!(
+        Float32::MIN_POSITIVE * Float32::new(0.5).unwrap(),
+        Float32::MIN_POSITIVE
+    );
+    assert_eq!(
+        Float32::MIN_POSITIVE * Float32::new(-0.5).unwrap(),
+        Float32::MAX_NEGATIVE
+    );
+
+    assert_eq!(
+        Float64::MIN_POSITIVE * Float64::new(0.5).unwrap(),
+        Float64::MIN_POSITIVE
+    );
+    assert_eq!(
+        Float64::MIN_POSITIVE * Float64::new(-0.5).unwrap(),
+        Float64::MAX_NEGATIVE
+    );
+
+    // Underflow.
+    assert_eq!(
+        Float32::MIN_POSITIVE * Float32::MIN_POSITIVE,
+        Float32::MIN_POSITIVE
+    );
+    assert_eq!(
+        Float32::MIN_POSITIVE * Float32::MAX_NEGATIVE,
+        Float32::MAX_NEGATIVE
+    );
+    assert_eq!(
+        Float32::MAX_NEGATIVE * Float32::MIN_POSITIVE,
+        Float32::MAX_NEGATIVE
+    );
+    assert_eq!(
+        Float32::MAX_NEGATIVE * Float32::MAX_NEGATIVE,
+        Float32::MIN_POSITIVE
+    );
+
+    assert_eq!(
+        Float64::MIN_POSITIVE * Float64::MIN_POSITIVE,
+        Float64::MIN_POSITIVE
+    );
+    assert_eq!(
+        Float64::MIN_POSITIVE * Float64::MAX_NEGATIVE,
+        Float64::MAX_NEGATIVE
+    );
+    assert_eq!(
+        Float64::MAX_NEGATIVE * Float64::MIN_POSITIVE,
+        Float64::MAX_NEGATIVE
+    );
+    assert_eq!(
+        Float64::MAX_NEGATIVE * Float64::MAX_NEGATIVE,
+        Float64::MIN_POSITIVE
     );
 }

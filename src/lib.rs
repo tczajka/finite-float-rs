@@ -23,7 +23,7 @@ use core::{
     fmt,
     hash::{Hash, Hasher},
     num::{FpCategory, ParseFloatError},
-    ops::{Add, Neg, Sub},
+    ops::{Add, Mul, Neg, Sub},
     str::FromStr,
 };
 
@@ -43,6 +43,7 @@ macro_rules! impl_binary_op_references {
         impl $op<&$t> for $t {
             type Output = $t;
 
+            #[inline]
             fn $f(self, rhs: &$t) -> $t {
                 self.$f(*rhs)
             }
@@ -51,6 +52,7 @@ macro_rules! impl_binary_op_references {
         impl $op<$t> for &$t {
             type Output = $t;
 
+            #[inline]
             fn $f(self, rhs: $t) -> $t {
                 (*self).$f(rhs)
             }
@@ -59,6 +61,7 @@ macro_rules! impl_binary_op_references {
         impl $op<&$t> for &$t {
             type Output = $t;
 
+            #[inline]
             fn $f(self, rhs: &$t) -> $t {
                 (*self).$f(*rhs)
             }
@@ -107,6 +110,7 @@ macro_rules! impl_finite_float {
             }
 
             /// Return the value as a primitive type.
+            #[inline]
             pub fn get(self) -> $base {
                 self.0
             }
@@ -149,18 +153,25 @@ macro_rules! impl_finite_float {
             fn from_primitive(val: $base) -> Self {
                 Self::from_primitive_with_underflow_sign(val, || Ordering::Equal)
             }
+
+            #[inline]
+            fn sign(self) -> Ordering {
+                self.cmp(&Self::ZERO)
+            }
         }
 
         impl Eq for $t {}
 
         #[allow(clippy::derive_ord_xor_partial_ord)]
         impl Ord for $t {
+            #[inline]
             fn cmp(&self, other: &Self) -> Ordering {
                 self.partial_cmp(other).unwrap()
             }
         }
 
         impl Default for $t {
+            #[inline]
             fn default() -> Self {
                 Self::ZERO
             }
@@ -168,6 +179,7 @@ macro_rules! impl_finite_float {
 
         #[allow(clippy::derive_hash_xor_eq)]
         impl Hash for $t {
+            #[inline]
             fn hash<H>(&self, state: &mut H)
             where H: Hasher
             {
@@ -176,6 +188,7 @@ macro_rules! impl_finite_float {
         }
 
         impl From<$t> for $base {
+            #[inline]
             fn from(val: $t) -> Self {
                 val.get()
             }
@@ -184,6 +197,7 @@ macro_rules! impl_finite_float {
         impl TryFrom<$base> for $t {
             type Error = NanError;
 
+            #[inline]
             fn try_from(val: $base) -> Result<$t, NanError> {
                 $t::new(val).ok_or(NanError)
             }
@@ -210,6 +224,7 @@ macro_rules! impl_finite_float {
         impl Neg for $t {
             type Output = Self;
 
+            #[inline]
             fn neg(self) -> Self {
                 Self::from_primitive(-self.get())
             }
@@ -218,6 +233,7 @@ macro_rules! impl_finite_float {
         impl Neg for &$t {
             type Output = $t;
 
+            #[inline]
             fn neg(self) -> $t {
                 (*self).neg()
             }
@@ -226,6 +242,7 @@ macro_rules! impl_finite_float {
         impl Add for $t {
             type Output = Self;
 
+            #[inline]
             fn add(self, rhs: Self) -> Self {
                 // Result is 0 iff self == -rhs.
                 Self::from_primitive(self.get() + rhs.get())
@@ -237,6 +254,7 @@ macro_rules! impl_finite_float {
         impl Sub for $t {
             type Output = Self;
 
+            #[inline]
             fn sub(self, rhs: Self) -> Self {
                 // Result is 0 iff self == rhs.
                 Self::from_primitive(self.get() - rhs.get())
@@ -244,6 +262,19 @@ macro_rules! impl_finite_float {
         }
 
         impl_binary_op_references!(Sub for $t, sub);
+
+        impl Mul for $t {
+            type Output = Self;
+
+            #[inline]
+            fn mul(self, rhs: Self) -> Self {
+                Self::from_primitive_with_underflow_sign(
+                    self.get() * rhs.get(),
+                    || multiply_signs(self.sign(), rhs.sign()))
+            }
+        }
+
+        impl_binary_op_references!(Mul for $t, mul);
     };
 }
 
@@ -263,6 +294,15 @@ fn parse_sign_of_tiny_float(s: &str) -> Ordering {
         }
     }
     Ordering::Equal
+}
+
+#[inline]
+fn multiply_signs(lhs: Ordering, rhs: Ordering) -> Ordering {
+    match lhs {
+        Ordering::Less => rhs.reverse(),
+        Ordering::Equal => Ordering::Equal,
+        Ordering::Greater => rhs,
+    }
 }
 
 /// Error indicating an attempt to convert a NaN to a finite float.
