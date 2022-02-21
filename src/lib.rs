@@ -39,7 +39,7 @@ macro_rules! impl_fmt {
 macro_rules! impl_finite_float {
     ($t:ident, $base:ident) => {
         /// Finite floating point number.
-        #[derive(Clone, Copy, PartialEq)]
+        #[derive(Clone, Copy, PartialEq, PartialOrd)]
         pub struct $t($base);
 
         impl $t {
@@ -117,6 +117,12 @@ macro_rules! impl_finite_float {
         }
 
         impl Eq for $t {}
+
+        impl Default for $t {
+            fn default() -> Self {
+                Self::ZERO
+            }
+        }
 
         impl From<$t> for $base {
             fn from(val: $t) -> Self {

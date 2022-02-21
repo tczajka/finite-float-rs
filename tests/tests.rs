@@ -73,6 +73,34 @@ fn test_new() {
 }
 
 #[test]
+fn test_default() {
+    assert_eq!(Float32::default(), Float32::ZERO);
+    assert!(Float32::default().get().is_sign_positive());
+    assert_eq!(Float64::default(), Float64::ZERO);
+    assert!(Float64::default().get().is_sign_positive());
+}
+
+#[test]
+#[allow(clippy::approx_constant)]
+fn test_conversions() {
+    assert_eq!(f32::from(Float32::new(3.14).unwrap()), 3.14);
+    assert_eq!(f64::from(Float64::new(3.14).unwrap()), 3.14);
+
+    assert_eq!(
+        Float32::try_from(3.14).unwrap(),
+        Float32::new(3.14).unwrap()
+    );
+
+    assert_eq!(
+        Float64::try_from(3.14).unwrap(),
+        Float64::new(3.14).unwrap()
+    );
+
+    assert_eq!(Float32::try_from(f32::NAN).unwrap_err(), NanError);
+    assert_eq!(Float64::try_from(f64::NAN).unwrap_err(), NanError);
+}
+
+#[test]
 #[allow(clippy::approx_constant)]
 fn test_formatting() {
     assert_eq!(format!("{:?}", Float32::ZERO), "0.0");
@@ -149,24 +177,4 @@ fn test_parse() {
         "-0.0000090e-10000".parse::<Float64>().unwrap(),
         Float64::MAX_NEGATIVE
     );
-}
-
-#[test]
-#[allow(clippy::approx_constant)]
-fn test_conversions() {
-    assert_eq!(f32::from(Float32::new(3.14).unwrap()), 3.14);
-    assert_eq!(f64::from(Float64::new(3.14).unwrap()), 3.14);
-
-    assert_eq!(
-        Float32::try_from(3.14).unwrap(),
-        Float32::new(3.14).unwrap()
-    );
-
-    assert_eq!(
-        Float64::try_from(3.14).unwrap(),
-        Float64::new(3.14).unwrap()
-    );
-
-    assert_eq!(Float32::try_from(f32::NAN).unwrap_err(), NanError);
-    assert_eq!(Float64::try_from(f64::NAN).unwrap_err(), NanError);
 }
