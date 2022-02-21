@@ -118,6 +118,13 @@ macro_rules! impl_finite_float {
 
         impl Eq for $t {}
 
+        #[allow(clippy::derive_ord_xor_partial_ord)]
+        impl Ord for $t {
+            fn cmp(&self, other: &Self) -> Ordering {
+                self.partial_cmp(other).unwrap()
+            }
+        }
+
         impl Default for $t {
             fn default() -> Self {
                 Self::ZERO

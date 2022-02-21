@@ -1,6 +1,6 @@
 use finite_float::{Float32, Float64, NanError};
 
-use std::convert::TryFrom;
+use std::{cmp::Ordering, convert::TryFrom};
 
 #[test]
 fn test_constants() {
@@ -78,6 +78,26 @@ fn test_default() {
     assert!(Float32::default().get().is_sign_positive());
     assert_eq!(Float64::default(), Float64::ZERO);
     assert!(Float64::default().get().is_sign_positive());
+}
+
+#[test]
+fn test_ord() {
+    assert_eq!(
+        Float32::new(2.0).unwrap().cmp(&Float32::new(3.0).unwrap()),
+        Ordering::Less
+    );
+    assert_eq!(
+        Float32::new(0.0).unwrap().cmp(&Float32::new(-0.0).unwrap()),
+        Ordering::Equal
+    );
+    assert_eq!(
+        Float64::new(2.0).unwrap().cmp(&Float64::new(3.0).unwrap()),
+        Ordering::Less
+    );
+    assert_eq!(
+        Float64::new(0.0).unwrap().cmp(&Float64::new(-0.0).unwrap()),
+        Ordering::Equal
+    );
 }
 
 #[test]
