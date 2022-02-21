@@ -23,7 +23,7 @@ use core::{
     fmt,
     hash::{Hash, Hasher},
     num::{FpCategory, ParseFloatError},
-    ops::Neg,
+    ops::{Add, Neg, Sub},
     str::FromStr,
 };
 
@@ -33,6 +33,34 @@ macro_rules! impl_fmt {
             #[inline]
             fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
                 fmt::$trait::fmt(&self.get(), f)
+            }
+        }
+    };
+}
+
+macro_rules! impl_binary_op_references {
+    ($op:ident for $t:ident, $f:ident) => {
+        impl $op<&$t> for $t {
+            type Output = $t;
+
+            fn $f(self, rhs: &$t) -> $t {
+                self.$f(*rhs)
+            }
+        }
+
+        impl $op<$t> for &$t {
+            type Output = $t;
+
+            fn $f(self, rhs: $t) -> $t {
+                (*self).$f(rhs)
+            }
+        }
+
+        impl $op<&$t> for &$t {
+            type Output = $t;
+
+            fn $f(self, rhs: &$t) -> $t {
+                (*self).$f(*rhs)
             }
         }
     };
@@ -194,6 +222,28 @@ macro_rules! impl_finite_float {
                 (*self).neg()
             }
         }
+
+        impl Add for $t {
+            type Output = Self;
+
+            fn add(self, rhs: Self) -> Self {
+                // Result is 0 iff self == -rhs.
+                Self::from_primitive(self.get() + rhs.get())
+            }
+        }
+
+        impl_binary_op_references!(Add for $t, add);
+
+        impl Sub for $t {
+            type Output = Self;
+
+            fn sub(self, rhs: Self) -> Self {
+                // Result is 0 iff self == rhs.
+                Self::from_primitive(self.get() - rhs.get())
+            }
+        }
+
+        impl_binary_op_references!(Sub for $t, sub);
     };
 }
 

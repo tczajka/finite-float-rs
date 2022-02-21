@@ -228,3 +228,61 @@ fn test_neg() {
     assert!((-Float64::ZERO).get().is_sign_positive());
     assert_eq!(-&Float64::new(3.0).unwrap(), Float64::new(-3.0).unwrap());
 }
+
+#[test]
+fn test_add() {
+    // Normal.
+    assert_eq!(
+        Float32::new(3.0).unwrap() + Float32::new(4.0).unwrap(),
+        Float32::new(7.0).unwrap()
+    );
+    assert_eq!(
+        Float64::new(3.0).unwrap() + Float64::new(4.0).unwrap(),
+        Float64::new(7.0).unwrap()
+    );
+
+    // Zero.
+    assert_eq!(
+        Float32::new(-3.0).unwrap() + Float32::new(3.0).unwrap(),
+        Float32::ZERO
+    );
+    assert_eq!(
+        Float64::new(-3.0).unwrap() + Float64::new(3.0).unwrap(),
+        Float64::ZERO
+    );
+
+    assert!((Float32::new(-3.0).unwrap() + Float32::new(3.0).unwrap())
+        .get()
+        .is_sign_positive());
+    assert!((Float64::new(-3.0).unwrap() + Float64::new(3.0).unwrap())
+        .get()
+        .is_sign_positive());
+
+    assert_eq!(Float32::MAX + Float32::MIN, Float32::ZERO);
+    assert_eq!(Float64::MAX + Float64::MIN, Float64::ZERO);
+
+    // Overflow.
+    assert_eq!(Float32::MAX + Float32::MAX, Float32::MAX);
+    assert_eq!(Float64::MAX + Float64::MAX, Float64::MAX);
+    assert_eq!(Float32::MIN + Float32::MIN, Float32::MIN);
+    assert_eq!(Float64::MIN + Float64::MIN, Float64::MIN);
+
+    // Underflow.
+    assert_eq!(
+        Float32::new(f32::MIN_POSITIVE * (1.0 + f32::EPSILON)).unwrap() + Float32::MAX_NEGATIVE,
+        Float32::MIN_POSITIVE
+    );
+    assert_eq!(
+        Float64::new(f64::MIN_POSITIVE * (1.0 + f64::EPSILON)).unwrap() + Float64::MAX_NEGATIVE,
+        Float64::MIN_POSITIVE
+    );
+
+    assert_eq!(
+        Float32::new(-f32::MIN_POSITIVE * (1.0 + f32::EPSILON)).unwrap() + Float32::MIN_POSITIVE,
+        Float32::MAX_NEGATIVE
+    );
+    assert_eq!(
+        Float64::new(-f64::MIN_POSITIVE * (1.0 + f64::EPSILON)).unwrap() + Float64::MIN_POSITIVE,
+        Float64::MAX_NEGATIVE
+    );
+}
