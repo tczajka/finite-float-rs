@@ -23,7 +23,7 @@ use core::{
     fmt,
     hash::{Hash, Hasher},
     num::{FpCategory, ParseFloatError},
-    ops::{Add, Mul, Neg, Sub},
+    ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign},
     str::FromStr,
 };
 
@@ -38,8 +38,8 @@ macro_rules! impl_fmt {
     };
 }
 
-macro_rules! impl_binary_op_references {
-    ($op:ident for $t:ident, $f:ident) => {
+macro_rules! impl_binary_op_alternatives {
+    ($op:ident for $t:ident, $f:ident, $op_assign:ident, $f_assign:ident) => {
         impl $op<&$t> for $t {
             type Output = $t;
 
@@ -64,6 +64,20 @@ macro_rules! impl_binary_op_references {
             #[inline]
             fn $f(self, rhs: &$t) -> $t {
                 (*self).$f(*rhs)
+            }
+        }
+
+        impl $op_assign<$t> for $t {
+            #[inline]
+            fn $f_assign(&mut self, rhs: $t) {
+                *self = (*self).$f(rhs);
+            }
+        }
+
+        impl $op_assign<&$t> for $t {
+            #[inline]
+            fn $f_assign(&mut self, rhs: &$t) {
+                *self = (*self).$f(*rhs);
             }
         }
     };
@@ -249,7 +263,7 @@ macro_rules! impl_finite_float {
             }
         }
 
-        impl_binary_op_references!(Add for $t, add);
+        impl_binary_op_alternatives!(Add for $t, add, AddAssign, add_assign);
 
         impl Sub for $t {
             type Output = Self;
@@ -261,7 +275,7 @@ macro_rules! impl_finite_float {
             }
         }
 
-        impl_binary_op_references!(Sub for $t, sub);
+        impl_binary_op_alternatives!(Sub for $t, sub, SubAssign, sub_assign);
 
         impl Mul for $t {
             type Output = Self;
@@ -274,7 +288,7 @@ macro_rules! impl_finite_float {
             }
         }
 
-        impl_binary_op_references!(Mul for $t, mul);
+        impl_binary_op_alternatives!(Mul for $t, mul, MulAssign, mul_assign);
     };
 }
 

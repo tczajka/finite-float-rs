@@ -242,32 +242,6 @@ fn test_add() {
         Float64::new(7.0).unwrap()
     );
 
-    // References.
-    assert_eq!(
-        Float32::new(3.0).unwrap() + &Float32::new(4.0).unwrap(),
-        Float32::new(7.0).unwrap()
-    );
-    assert_eq!(
-        &Float32::new(3.0).unwrap() + Float32::new(4.0).unwrap(),
-        Float32::new(7.0).unwrap()
-    );
-    assert_eq!(
-        &Float32::new(3.0).unwrap() + &Float32::new(4.0).unwrap(),
-        Float32::new(7.0).unwrap()
-    );
-    assert_eq!(
-        Float64::new(3.0).unwrap() + &Float64::new(4.0).unwrap(),
-        Float64::new(7.0).unwrap()
-    );
-    assert_eq!(
-        &Float64::new(3.0).unwrap() + Float64::new(4.0).unwrap(),
-        Float64::new(7.0).unwrap()
-    );
-    assert_eq!(
-        &Float64::new(3.0).unwrap() + &Float64::new(4.0).unwrap(),
-        Float64::new(7.0).unwrap()
-    );
-
     // Zero.
     assert_eq!(
         Float32::new(-3.0).unwrap() + Float32::new(3.0).unwrap(),
@@ -312,6 +286,49 @@ fn test_add() {
         Float64::new(-f64::MIN_POSITIVE * (1.0 + f64::EPSILON)).unwrap() + Float64::MIN_POSITIVE,
         Float64::MAX_NEGATIVE
     );
+
+    // References.
+    assert_eq!(
+        Float32::new(3.0).unwrap() + &Float32::new(4.0).unwrap(),
+        Float32::new(7.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() + Float32::new(4.0).unwrap(),
+        Float32::new(7.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() + &Float32::new(4.0).unwrap(),
+        Float32::new(7.0).unwrap()
+    );
+    assert_eq!(
+        Float64::new(3.0).unwrap() + &Float64::new(4.0).unwrap(),
+        Float64::new(7.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() + Float64::new(4.0).unwrap(),
+        Float64::new(7.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() + &Float64::new(4.0).unwrap(),
+        Float64::new(7.0).unwrap()
+    );
+
+    // Assignment.
+    let mut x = Float32::new(3.0).unwrap();
+    x += Float32::new(4.0).unwrap();
+    assert_eq!(x, Float32::new(7.0).unwrap());
+
+    let mut x = Float32::new(3.0).unwrap();
+    x += &Float32::new(4.0).unwrap();
+    assert_eq!(x, Float32::new(7.0).unwrap());
+
+    let mut x = Float64::new(3.0).unwrap();
+    x += Float64::new(4.0).unwrap();
+    assert_eq!(x, Float64::new(7.0).unwrap());
+
+    let mut x = Float64::new(3.0).unwrap();
+    x += &Float64::new(4.0).unwrap();
+    assert_eq!(x, Float64::new(7.0).unwrap());
 }
 
 #[test]
@@ -324,32 +341,6 @@ fn test_sub() {
     );
     assert_eq!(
         Float64::new(3.0).unwrap() - Float64::new(4.0).unwrap(),
-        Float64::new(-1.0).unwrap()
-    );
-
-    // References.
-    assert_eq!(
-        Float32::new(3.0).unwrap() - &Float32::new(4.0).unwrap(),
-        Float32::new(-1.0).unwrap()
-    );
-    assert_eq!(
-        &Float32::new(3.0).unwrap() - Float32::new(4.0).unwrap(),
-        Float32::new(-1.0).unwrap()
-    );
-    assert_eq!(
-        &Float32::new(3.0).unwrap() - &Float32::new(4.0).unwrap(),
-        Float32::new(-1.0).unwrap()
-    );
-    assert_eq!(
-        Float64::new(3.0).unwrap() - &Float64::new(4.0).unwrap(),
-        Float64::new(-1.0).unwrap()
-    );
-    assert_eq!(
-        &Float64::new(3.0).unwrap() - Float64::new(4.0).unwrap(),
-        Float64::new(-1.0).unwrap()
-    );
-    assert_eq!(
-        &Float64::new(3.0).unwrap() - &Float64::new(4.0).unwrap(),
         Float64::new(-1.0).unwrap()
     );
 
@@ -397,6 +388,49 @@ fn test_sub() {
         Float64::new(-f64::MIN_POSITIVE * (1.0 + f64::EPSILON)).unwrap() - Float64::MAX_NEGATIVE,
         Float64::MAX_NEGATIVE
     );
+
+    // References.
+    assert_eq!(
+        Float32::new(3.0).unwrap() - &Float32::new(4.0).unwrap(),
+        Float32::new(-1.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() - Float32::new(4.0).unwrap(),
+        Float32::new(-1.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() - &Float32::new(4.0).unwrap(),
+        Float32::new(-1.0).unwrap()
+    );
+    assert_eq!(
+        Float64::new(3.0).unwrap() - &Float64::new(4.0).unwrap(),
+        Float64::new(-1.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() - Float64::new(4.0).unwrap(),
+        Float64::new(-1.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() - &Float64::new(4.0).unwrap(),
+        Float64::new(-1.0).unwrap()
+    );
+
+    // Assignment.
+    let mut x = Float32::new(3.0).unwrap();
+    x -= Float32::new(4.0).unwrap();
+    assert_eq!(x, Float32::new(-1.0).unwrap());
+
+    let mut x = Float32::new(3.0).unwrap();
+    x -= &Float32::new(4.0).unwrap();
+    assert_eq!(x, Float32::new(-1.0).unwrap());
+
+    let mut x = Float64::new(3.0).unwrap();
+    x -= Float64::new(4.0).unwrap();
+    assert_eq!(x, Float64::new(-1.0).unwrap());
+
+    let mut x = Float64::new(3.0).unwrap();
+    x -= &Float64::new(4.0).unwrap();
+    assert_eq!(x, Float64::new(-1.0).unwrap());
 }
 
 #[test]
@@ -409,32 +443,6 @@ fn test_mul() {
     );
     assert_eq!(
         Float64::new(3.0).unwrap() * Float64::new(4.0).unwrap(),
-        Float64::new(12.0).unwrap()
-    );
-
-    assert_eq!(
-        Float32::new(3.0).unwrap() * &Float32::new(4.0).unwrap(),
-        Float32::new(12.0).unwrap()
-    );
-    assert_eq!(
-        &Float32::new(3.0).unwrap() * Float32::new(4.0).unwrap(),
-        Float32::new(12.0).unwrap()
-    );
-    assert_eq!(
-        &Float32::new(3.0).unwrap() * &Float32::new(4.0).unwrap(),
-        Float32::new(12.0).unwrap()
-    );
-
-    assert_eq!(
-        Float64::new(3.0).unwrap() * &Float64::new(4.0).unwrap(),
-        Float64::new(12.0).unwrap()
-    );
-    assert_eq!(
-        &Float64::new(3.0).unwrap() * Float64::new(4.0).unwrap(),
-        Float64::new(12.0).unwrap()
-    );
-    assert_eq!(
-        &Float64::new(3.0).unwrap() * &Float64::new(4.0).unwrap(),
         Float64::new(12.0).unwrap()
     );
 
@@ -513,4 +521,48 @@ fn test_mul() {
         Float64::MAX_NEGATIVE * Float64::MAX_NEGATIVE,
         Float64::MIN_POSITIVE
     );
+
+    // References.
+    assert_eq!(
+        Float32::new(3.0).unwrap() * &Float32::new(4.0).unwrap(),
+        Float32::new(12.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() * Float32::new(4.0).unwrap(),
+        Float32::new(12.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(3.0).unwrap() * &Float32::new(4.0).unwrap(),
+        Float32::new(12.0).unwrap()
+    );
+
+    assert_eq!(
+        Float64::new(3.0).unwrap() * &Float64::new(4.0).unwrap(),
+        Float64::new(12.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() * Float64::new(4.0).unwrap(),
+        Float64::new(12.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(3.0).unwrap() * &Float64::new(4.0).unwrap(),
+        Float64::new(12.0).unwrap()
+    );
+
+    // Assignment.
+    let mut x = Float32::new(3.0).unwrap();
+    x *= Float32::new(4.0).unwrap();
+    assert_eq!(x, Float32::new(12.0).unwrap());
+
+    let mut x = Float32::new(3.0).unwrap();
+    x *= &Float32::new(4.0).unwrap();
+    assert_eq!(x, Float32::new(12.0).unwrap());
+
+    let mut x = Float64::new(3.0).unwrap();
+    x *= Float64::new(4.0).unwrap();
+    assert_eq!(x, Float64::new(12.0).unwrap());
+
+    let mut x = Float64::new(3.0).unwrap();
+    x *= &Float64::new(4.0).unwrap();
+    assert_eq!(x, Float64::new(12.0).unwrap());
 }
