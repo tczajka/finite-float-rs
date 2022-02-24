@@ -23,7 +23,7 @@ use core::{
     fmt,
     hash::{Hash, Hasher},
     num::{FpCategory, ParseFloatError},
-    ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign},
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
     str::FromStr,
 };
 
@@ -289,6 +289,24 @@ macro_rules! impl_finite_float {
         }
 
         impl_binary_op_alternatives!(Mul for $t, mul, MulAssign, mul_assign);
+
+        impl Div for $t {
+            type Output = Self;
+
+            #[inline]
+            fn div(self, rhs: Self) -> Self {
+                let res = self.get() / rhs.get();
+                if res.is_nan() {
+                    // 0.0 / 0.0 = MAX
+                    Self::MAX
+                } else {
+                    Self::from_primitive_with_underflow_sign(res,
+                        || multiply_signs(self.sign(), rhs.sign()))
+                }
+            }
+        }
+
+        impl_binary_op_alternatives!(Div for $t, div, DivAssign, div_assign);
     };
 }
 

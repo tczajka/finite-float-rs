@@ -313,7 +313,7 @@ fn test_add() {
         Float64::new(7.0).unwrap()
     );
 
-    // Assignment.
+    // In place.
     let mut x = Float32::new(3.0).unwrap();
     x += Float32::new(4.0).unwrap();
     assert_eq!(x, Float32::new(7.0).unwrap());
@@ -415,7 +415,7 @@ fn test_sub() {
         Float64::new(-1.0).unwrap()
     );
 
-    // Assignment.
+    // In place.
     let mut x = Float32::new(3.0).unwrap();
     x -= Float32::new(4.0).unwrap();
     assert_eq!(x, Float32::new(-1.0).unwrap());
@@ -549,7 +549,7 @@ fn test_mul() {
         Float64::new(12.0).unwrap()
     );
 
-    // Assignment.
+    // In place.
     let mut x = Float32::new(3.0).unwrap();
     x *= Float32::new(4.0).unwrap();
     assert_eq!(x, Float32::new(12.0).unwrap());
@@ -565,4 +565,119 @@ fn test_mul() {
     let mut x = Float64::new(3.0).unwrap();
     x *= &Float64::new(4.0).unwrap();
     assert_eq!(x, Float64::new(12.0).unwrap());
+}
+
+#[test]
+#[allow(clippy::op_ref)]
+fn test_div() {
+    // Normal.
+    assert_eq!(
+        Float32::new(5.0).unwrap() / Float32::new(2.0).unwrap(),
+        Float32::new(2.5).unwrap()
+    );
+    assert_eq!(
+        Float64::new(5.0).unwrap() / Float64::new(2.0).unwrap(),
+        Float64::new(2.5).unwrap()
+    );
+
+    // Zero / non-zero.
+    assert_eq!(Float32::ZERO / Float32::new(3.0).unwrap(), Float32::ZERO);
+    assert_eq!(Float64::ZERO / Float64::new(3.0).unwrap(), Float64::ZERO);
+    assert!((Float32::ZERO / Float32::MIN).get().is_sign_positive());
+    assert!((Float64::ZERO / Float64::MIN).get().is_sign_positive());
+
+    // Non-zero / zero.
+    assert_eq!(Float32::new(3.0).unwrap() / Float32::ZERO, Float32::MAX);
+    assert_eq!(Float64::new(3.0).unwrap() / Float64::ZERO, Float64::MAX);
+    assert_eq!(Float32::new(-3.0).unwrap() / Float32::ZERO, Float32::MIN);
+    assert_eq!(Float64::new(-3.0).unwrap() / Float64::ZERO, Float64::MIN);
+
+    // Zero / zero.
+    assert_eq!(Float32::ZERO / Float32::ZERO, Float32::MAX);
+    assert_eq!(Float64::ZERO / Float64::ZERO, Float64::MAX);
+
+    // Overflow.
+    assert_eq!(Float32::MAX / Float32::MIN_POSITIVE, Float32::MAX);
+    assert_eq!(Float32::MAX / Float32::MAX_NEGATIVE, Float32::MIN);
+    assert_eq!(Float32::MIN / Float32::MIN_POSITIVE, Float32::MIN);
+    assert_eq!(Float32::MIN / Float32::MAX_NEGATIVE, Float32::MAX);
+
+    assert_eq!(Float64::MAX / Float64::MIN_POSITIVE, Float64::MAX);
+    assert_eq!(Float64::MAX / Float64::MAX_NEGATIVE, Float64::MIN);
+    assert_eq!(Float64::MIN / Float64::MIN_POSITIVE, Float64::MIN);
+    assert_eq!(Float64::MIN / Float64::MAX_NEGATIVE, Float64::MAX);
+
+    // Subnormal.
+    assert_eq!(
+        Float32::MIN_POSITIVE / Float32::new(2.0).unwrap(),
+        Float32::MIN_POSITIVE
+    );
+    assert_eq!(
+        Float32::MIN_POSITIVE / Float32::new(-2.0).unwrap(),
+        Float32::MAX_NEGATIVE
+    );
+
+    assert_eq!(
+        Float64::MIN_POSITIVE / Float64::new(2.0).unwrap(),
+        Float64::MIN_POSITIVE
+    );
+    assert_eq!(
+        Float64::MIN_POSITIVE / Float64::new(-2.0).unwrap(),
+        Float64::MAX_NEGATIVE
+    );
+
+    // Underflow.
+    assert_eq!(Float32::MIN_POSITIVE / Float32::MAX, Float32::MIN_POSITIVE);
+    assert_eq!(Float32::MIN_POSITIVE / Float32::MIN, Float32::MAX_NEGATIVE);
+    assert_eq!(Float32::MAX_NEGATIVE / Float32::MAX, Float32::MAX_NEGATIVE);
+    assert_eq!(Float32::MAX_NEGATIVE / Float32::MIN, Float32::MIN_POSITIVE);
+
+    assert_eq!(Float64::MIN_POSITIVE / Float64::MAX, Float64::MIN_POSITIVE);
+    assert_eq!(Float64::MIN_POSITIVE / Float64::MIN, Float64::MAX_NEGATIVE);
+    assert_eq!(Float64::MAX_NEGATIVE / Float64::MAX, Float64::MAX_NEGATIVE);
+    assert_eq!(Float64::MAX_NEGATIVE / Float64::MIN, Float64::MIN_POSITIVE);
+
+    // References.
+    assert_eq!(
+        Float32::new(5.0).unwrap() / &Float32::new(2.0).unwrap(),
+        Float32::new(2.5).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(5.0).unwrap() / Float32::new(2.0).unwrap(),
+        Float32::new(2.5).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(5.0).unwrap() / &Float32::new(2.0).unwrap(),
+        Float32::new(2.5).unwrap()
+    );
+
+    assert_eq!(
+        Float64::new(5.0).unwrap() / &Float64::new(2.0).unwrap(),
+        Float64::new(2.5).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(5.0).unwrap() / Float64::new(2.0).unwrap(),
+        Float64::new(2.5).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(5.0).unwrap() / &Float64::new(2.0).unwrap(),
+        Float64::new(2.5).unwrap()
+    );
+
+    // In place.
+    let mut x = Float32::new(5.0).unwrap();
+    x /= Float32::new(2.0).unwrap();
+    assert_eq!(x, Float32::new(2.5).unwrap());
+
+    let mut x = Float32::new(5.0).unwrap();
+    x /= &Float32::new(2.0).unwrap();
+    assert_eq!(x, Float32::new(2.5).unwrap());
+
+    let mut x = Float64::new(5.0).unwrap();
+    x /= Float64::new(2.0).unwrap();
+    assert_eq!(x, Float64::new(2.5).unwrap());
+
+    let mut x = Float64::new(5.0).unwrap();
+    x /= &Float64::new(2.0).unwrap();
+    assert_eq!(x, Float64::new(2.5).unwrap());
 }
