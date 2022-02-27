@@ -20,3 +20,7 @@ default = ["std"]
 
 # Interface with the std library.
 std = []
+
+[[test]]
+name = "tests"
+required-features = ["std"]

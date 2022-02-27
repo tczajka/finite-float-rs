@@ -175,6 +175,7 @@ macro_rules! impl_finite_float {
 
 
             /// Euclidean division.
+            #[cfg(feature = "std")]
             #[inline]
             pub fn div_euclid(self, rhs: Self) -> Self {
                 let res = self.get().div_euclid(rhs.get());
