@@ -172,6 +172,19 @@ macro_rules! impl_finite_float {
             fn sign(self) -> Ordering {
                 self.cmp(&Self::ZERO)
             }
+
+
+            /// Euclidean division.
+            #[inline]
+            pub fn div_euclid(self, rhs: Self) -> Self {
+                let res = self.get().div_euclid(rhs.get());
+                if res.is_nan() {
+                    // (0.0).div_euclid(0.0) = MAX
+                    Self::MAX
+                } else {
+                    Self::from_primitive(res)
+                }
+            }
         }
 
         impl Eq for $t {}
@@ -325,6 +338,7 @@ macro_rules! impl_finite_float {
         }
 
         impl_binary_op_alternatives!(Rem for $t, rem, RemAssign, rem_assign);
+
     };
 }
 

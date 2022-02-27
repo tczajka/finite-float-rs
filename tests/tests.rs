@@ -802,3 +802,89 @@ fn test_rem() {
     x %= &Float64::new(10.0).unwrap();
     assert_eq!(x, Float64::new(3.0).unwrap());
 }
+
+#[test]
+fn test_div_euclid() {
+    // Normal.
+    assert_eq!(
+        Float32::new(13.0)
+            .unwrap()
+            .div_euclid(Float32::new(10.0).unwrap()),
+        Float32::new(1.0).unwrap()
+    );
+    assert_eq!(
+        Float32::new(-13.0)
+            .unwrap()
+            .div_euclid(Float32::new(10.0).unwrap()),
+        Float32::new(-2.0).unwrap()
+    );
+    assert_eq!(
+        Float32::new(1.0)
+            .unwrap()
+            .div_euclid(Float32::new(-10.0).unwrap()),
+        Float32::ZERO
+    );
+    assert!(Float32::new(1.0)
+        .unwrap()
+        .div_euclid(Float32::new(-10.0).unwrap())
+        .get()
+        .is_sign_positive());
+
+    assert_eq!(
+        Float64::new(13.0)
+            .unwrap()
+            .div_euclid(Float64::new(10.0).unwrap()),
+        Float64::new(1.0).unwrap()
+    );
+    assert_eq!(
+        Float64::new(-13.0)
+            .unwrap()
+            .div_euclid(Float64::new(10.0).unwrap()),
+        Float64::new(-2.0).unwrap()
+    );
+    assert_eq!(
+        Float64::new(1.0)
+            .unwrap()
+            .div_euclid(Float64::new(-10.0).unwrap()),
+        Float64::ZERO
+    );
+    assert!(Float64::new(1.0)
+        .unwrap()
+        .div_euclid(Float64::new(-10.0).unwrap())
+        .get()
+        .is_sign_positive());
+
+    // Non-zero / zero.
+    assert_eq!(
+        Float32::new(3.0).unwrap().div_euclid(Float32::ZERO),
+        Float32::MAX
+    );
+    assert_eq!(
+        Float32::new(-3.0).unwrap().div_euclid(Float32::ZERO),
+        Float32::MIN
+    );
+
+    assert_eq!(
+        Float64::new(3.0).unwrap().div_euclid(Float64::ZERO),
+        Float64::MAX
+    );
+    assert_eq!(
+        Float64::new(-3.0).unwrap().div_euclid(Float64::ZERO),
+        Float64::MIN
+    );
+
+    // Zero / zero.
+    assert_eq!(Float32::ZERO.div_euclid(Float32::ZERO), Float32::MAX);
+    assert_eq!(Float64::ZERO.div_euclid(Float64::ZERO), Float64::MAX);
+
+    // Overflow.
+    assert_eq!(Float32::MAX.div_euclid(Float32::MIN_POSITIVE), Float32::MAX);
+    assert_eq!(Float32::MAX.div_euclid(Float32::MAX_NEGATIVE), Float32::MIN);
+    assert_eq!(Float32::MIN.div_euclid(Float32::MIN_POSITIVE), Float32::MIN);
+    assert_eq!(Float32::MIN.div_euclid(Float32::MAX_NEGATIVE), Float32::MAX);
+
+    assert_eq!(Float64::MAX.div_euclid(Float64::MIN_POSITIVE), Float64::MAX);
+    assert_eq!(Float64::MAX.div_euclid(Float64::MAX_NEGATIVE), Float64::MIN);
+    assert_eq!(Float64::MIN.div_euclid(Float64::MIN_POSITIVE), Float64::MIN);
+    assert_eq!(Float64::MIN.div_euclid(Float64::MAX_NEGATIVE), Float64::MAX);
+}
