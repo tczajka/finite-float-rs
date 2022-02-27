@@ -23,7 +23,7 @@ use core::{
     fmt,
     hash::{Hash, Hasher},
     num::{FpCategory, ParseFloatError},
-    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
     str::FromStr,
 };
 
@@ -307,6 +307,24 @@ macro_rules! impl_finite_float {
         }
 
         impl_binary_op_alternatives!(Div for $t, div, DivAssign, div_assign);
+
+        impl Rem for $t {
+            type Output = Self;
+
+            #[inline]
+            fn rem(self, rhs: Self) -> Self {
+                let res = self.get() % rhs.get();
+                if res.is_nan() {
+                    // x % 0.0 = 0.0
+                    Self::ZERO
+                } else {
+                    // res == 0 iff exact multiple
+                    Self::from_primitive(res)
+                }
+            }
+        }
+
+        impl_binary_op_alternatives!(Rem for $t, rem, RemAssign, rem_assign);
     };
 }
 

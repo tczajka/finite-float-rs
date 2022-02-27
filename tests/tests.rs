@@ -576,8 +576,18 @@ fn test_div() {
         Float32::new(2.5).unwrap()
     );
     assert_eq!(
+        Float32::new(-5.0).unwrap() / Float32::new(2.0).unwrap(),
+        Float32::new(-2.5).unwrap()
+    );
+
+    assert_eq!(
         Float64::new(5.0).unwrap() / Float64::new(2.0).unwrap(),
         Float64::new(2.5).unwrap()
+    );
+
+    assert_eq!(
+        Float64::new(-5.0).unwrap() / Float64::new(2.0).unwrap(),
+        Float64::new(-2.5).unwrap()
     );
 
     // Zero / non-zero.
@@ -680,4 +690,115 @@ fn test_div() {
     let mut x = Float64::new(5.0).unwrap();
     x /= &Float64::new(2.0).unwrap();
     assert_eq!(x, Float64::new(2.5).unwrap());
+}
+
+#[test]
+#[allow(clippy::op_ref)]
+fn test_rem() {
+    // Normal.
+    assert_eq!(
+        Float32::new(13.0).unwrap() % Float32::new(10.0).unwrap(),
+        Float32::new(3.0).unwrap()
+    );
+    assert_eq!(
+        Float32::new(-13.0).unwrap() % Float32::new(10.0).unwrap(),
+        Float32::new(-3.0).unwrap()
+    );
+
+    assert_eq!(
+        Float64::new(13.0).unwrap() % Float64::new(10.0).unwrap(),
+        Float64::new(3.0).unwrap()
+    );
+    assert_eq!(
+        Float64::new(-13.0).unwrap() % Float64::new(10.0).unwrap(),
+        Float64::new(-3.0).unwrap()
+    );
+
+    // Non-zero % zero.
+    assert_eq!(Float32::new(3.0).unwrap() % Float32::ZERO, Float32::ZERO);
+    assert_eq!(Float64::new(3.0).unwrap() % Float64::ZERO, Float64::ZERO);
+    assert_eq!(Float32::new(-3.0).unwrap() % Float32::ZERO, Float32::ZERO);
+    assert_eq!(Float64::new(-3.0).unwrap() % Float64::ZERO, Float64::ZERO);
+    assert!((Float32::new(-3.0).unwrap() % Float32::ZERO)
+        .get()
+        .is_sign_positive());
+    assert!((Float64::new(-3.0).unwrap() % Float64::ZERO)
+        .get()
+        .is_sign_positive());
+
+    // Zero % zero.
+    assert_eq!(Float32::ZERO % Float32::ZERO, Float32::ZERO);
+    assert_eq!(Float64::ZERO % Float64::ZERO, Float64::ZERO);
+
+    // Subnormal.
+    assert_eq!(
+        (Float32::MIN_POSITIVE * Float32::new(1.5).unwrap()) % Float32::MIN_POSITIVE,
+        Float32::MIN_POSITIVE
+    );
+    assert_eq!(
+        (Float32::MIN_POSITIVE * Float32::new(-1.5).unwrap()) % Float32::MIN_POSITIVE,
+        Float32::MAX_NEGATIVE
+    );
+    assert_eq!(
+        (Float64::MIN_POSITIVE * Float64::new(1.5).unwrap()) % Float64::MIN_POSITIVE,
+        Float64::MIN_POSITIVE
+    );
+    assert_eq!(
+        (Float64::MIN_POSITIVE * Float64::new(-1.5).unwrap()) % Float64::MIN_POSITIVE,
+        Float64::MAX_NEGATIVE
+    );
+
+    // Exact multiple.
+    assert_eq!(
+        (Float32::MIN_POSITIVE * Float32::new(2.0).unwrap()) % Float32::MIN_POSITIVE,
+        Float32::ZERO
+    );
+    assert_eq!(
+        (Float64::MIN_POSITIVE * Float64::new(2.0).unwrap()) % Float64::MIN_POSITIVE,
+        Float64::ZERO
+    );
+
+    // References.
+    assert_eq!(
+        Float32::new(13.0).unwrap() % &Float32::new(10.0).unwrap(),
+        Float32::new(3.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(13.0).unwrap() % Float32::new(10.0).unwrap(),
+        Float32::new(3.0).unwrap()
+    );
+    assert_eq!(
+        &Float32::new(13.0).unwrap() % &Float32::new(10.0).unwrap(),
+        Float32::new(3.0).unwrap()
+    );
+
+    assert_eq!(
+        Float64::new(13.0).unwrap() % &Float64::new(10.0).unwrap(),
+        Float64::new(3.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(13.0).unwrap() % Float64::new(10.0).unwrap(),
+        Float64::new(3.0).unwrap()
+    );
+    assert_eq!(
+        &Float64::new(13.0).unwrap() % &Float64::new(10.0).unwrap(),
+        Float64::new(3.0).unwrap()
+    );
+
+    // In place.
+    let mut x = Float32::new(13.0).unwrap();
+    x %= Float32::new(10.0).unwrap();
+    assert_eq!(x, Float32::new(3.0).unwrap());
+
+    let mut x = Float32::new(13.0).unwrap();
+    x %= &Float32::new(10.0).unwrap();
+    assert_eq!(x, Float32::new(3.0).unwrap());
+
+    let mut x = Float64::new(13.0).unwrap();
+    x %= Float64::new(10.0).unwrap();
+    assert_eq!(x, Float64::new(3.0).unwrap());
+
+    let mut x = Float64::new(13.0).unwrap();
+    x %= &Float64::new(10.0).unwrap();
+    assert_eq!(x, Float64::new(3.0).unwrap());
 }
