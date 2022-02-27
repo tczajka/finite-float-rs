@@ -888,3 +888,94 @@ fn test_div_euclid() {
     assert_eq!(Float64::MIN.div_euclid(Float64::MIN_POSITIVE), Float64::MIN);
     assert_eq!(Float64::MIN.div_euclid(Float64::MAX_NEGATIVE), Float64::MAX);
 }
+
+#[test]
+fn test_rem_euclid() {
+    // Normal.
+    assert_eq!(
+        Float32::new(13.0)
+            .unwrap()
+            .rem_euclid(Float32::new(10.0).unwrap()),
+        Float32::new(3.0).unwrap()
+    );
+    assert_eq!(
+        Float32::new(-13.0)
+            .unwrap()
+            .rem_euclid(Float32::new(10.0).unwrap()),
+        Float32::new(7.0).unwrap()
+    );
+
+    assert_eq!(
+        Float64::new(13.0)
+            .unwrap()
+            .rem_euclid(Float64::new(10.0).unwrap()),
+        Float64::new(3.0).unwrap()
+    );
+    assert_eq!(
+        Float64::new(-13.0)
+            .unwrap()
+            .rem_euclid(Float64::new(10.0).unwrap()),
+        Float64::new(7.0).unwrap()
+    );
+
+    // Non-zero % zero.
+    assert_eq!(
+        Float32::new(3.0).unwrap().rem_euclid(Float32::ZERO),
+        Float32::ZERO
+    );
+    assert_eq!(
+        Float32::new(-3.0).unwrap().rem_euclid(Float32::ZERO),
+        Float32::ZERO
+    );
+    assert!(Float32::new(-3.0)
+        .unwrap()
+        .rem_euclid(Float32::ZERO)
+        .get()
+        .is_sign_positive());
+
+    assert_eq!(
+        Float64::new(3.0).unwrap().rem_euclid(Float64::ZERO),
+        Float64::ZERO
+    );
+    assert_eq!(
+        Float64::new(-3.0).unwrap().rem_euclid(Float64::ZERO),
+        Float64::ZERO
+    );
+    assert!(Float64::new(-3.0)
+        .unwrap()
+        .rem_euclid(Float64::ZERO)
+        .get()
+        .is_sign_positive());
+
+    // Zero % zero.
+    assert_eq!(Float32::ZERO.rem_euclid(Float32::ZERO), Float32::ZERO);
+    assert_eq!(Float64::ZERO.rem_euclid(Float64::ZERO), Float64::ZERO);
+
+    // Subnormal.
+    assert_eq!(
+        (Float32::MIN_POSITIVE * Float32::new(1.5).unwrap()).rem_euclid(Float32::MIN_POSITIVE),
+        Float32::MIN_POSITIVE
+    );
+    assert_eq!(
+        (Float32::MIN_POSITIVE * Float32::new(-1.5).unwrap()).rem_euclid(Float32::MIN_POSITIVE),
+        Float32::MIN_POSITIVE
+    );
+    assert_eq!(
+        (Float64::MIN_POSITIVE * Float64::new(1.5).unwrap()).rem_euclid(Float64::MIN_POSITIVE),
+        Float64::MIN_POSITIVE
+    );
+    assert_eq!(
+        (Float64::MIN_POSITIVE * Float64::new(-1.5).unwrap()).rem_euclid(Float64::MIN_POSITIVE),
+        Float64::MIN_POSITIVE
+    );
+
+    // Exact multiple.
+    assert_eq!(
+        (Float32::MIN_POSITIVE * Float32::new(2.0).unwrap()).rem_euclid(Float32::MIN_POSITIVE),
+        Float32::ZERO
+    );
+    assert_eq!(
+        (Float64::MIN_POSITIVE * Float64::new(2.0).unwrap()).rem_euclid(Float64::MIN_POSITIVE),
+        Float64::ZERO
+    );
+}

@@ -183,9 +183,25 @@ macro_rules! impl_finite_float {
                     // (0.0).div_euclid(0.0) = MAX
                     Self::MAX
                 } else {
+                    // Result is an integer: if underflow, it's 0.
                     Self::from_primitive(res)
                 }
             }
+
+           /// Euclidean remainder.
+           #[cfg(feature = "std")]
+           #[inline]
+           pub fn rem_euclid(self, rhs: Self) -> Self {
+               let res = self.get().rem_euclid(rhs.get());
+               if res.is_nan() {
+                   // self.rem_euclid(0.0) = 0.0
+                   Self::ZERO
+               } else {
+                   // res == 0.0 iff exact multiple
+                   Self::from_primitive(res)
+               }
+           }
+
         }
 
         impl Eq for $t {}
